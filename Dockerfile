@@ -1,25 +1,25 @@
-# Use PHP 8.0 with FPM
-FROM php:8.0-fpm
+FROM php:8.2-fpm
 
-# Install required PHP extensions
+# Instalacja zależności systemowych i brakujących rozszerzeń PHP
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
+    libicu-dev \
     zip \
-    unzip \
     git \
+    unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+    && docker-php-ext-install gd pdo pdo_mysql intl
 
-# Install Composer
+# Instalacja rozszerzenia Redis
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Instalacja Composera
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Set working directory
+# Ustawienie katalogu roboczego
 WORKDIR /var/www/html
 
-# Copy existing application files
-COPY ./app /var/www/html
-
-# Install PHP dependencies
-RUN composer install
+# Instalacja zależności aplikacji
+RUN composer install --no-dev --prefer-dist

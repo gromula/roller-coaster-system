@@ -13,6 +13,21 @@ use CodeIgniter\Config\BaseConfig;
 
 class Cache extends BaseConfig
 {
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $env = getenv('APP_ENV') ?: 'development';
+        $this->redis = [
+            'host'     => 'redis',
+            'password' => '',
+            'port'     => 6379,
+            'timeout'  => 0,
+            'database' => ($env === 'development') ? 1 : 0, 
+        ];
+    }
+
     /**
      * --------------------------------------------------------------------------
      * Primary Handler
@@ -113,13 +128,7 @@ class Cache extends BaseConfig
      *
      * @var array<string, int|string|null>
      */
-    public array $redis = [
-        'host'     => '127.0.0.1',
-        'password' => null,
-        'port'     => 6379,
-        'timeout'  => 0,
-        'database' => 0,
-    ];
+    public array $redis;
 
     /**
      * --------------------------------------------------------------------------

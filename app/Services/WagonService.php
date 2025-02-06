@@ -6,6 +6,7 @@ use App\DTO\WagonDTO;
 use App\Utils\RedisKeyHelper;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Swoole\NameResolver\Redis;
 
 class WagonService
 {
@@ -21,12 +22,11 @@ class WagonService
     public function addWagon(WagonDTO $wagonDTO): string
     {
         $redis = $this->redisService->getClient();
-        
-        
         $wagonId = uniqid('wagon_', true);
         $wagonDTO->setId($wagonId);
 
         $wagonKey = RedisKeyHelper::wagon($wagonDTO->coasterId, $wagonId);
+        $wagonListKey = RedisKeyHelper::coasterWagons($wagonDTO->coasterId);
 
         try {
             $redis->hmset($wagonKey, [
@@ -34,7 +34,7 @@ class WagonService
                 'predkosc_wagonu' => $wagonDTO->predkoscWagonu
             ]);
 
-            $redis->sadd("coasters:wagons:{$wagonDTO->coasterId}", $wagonId);
+            $redis->sadd($wagonListKey, $wagonId);
 
             $this->logger->info("🚃 Wagon dodany: {$wagonKey}");
             return $wagonId;
@@ -53,7 +53,7 @@ class WagonService
             throw new Exception("Wagon o ID {$wagonId} nie istnieje w kolejce {$coasterId}.");
         }
     
-        $redis->srem("coasters:wagons:$coasterId", $wagonId);
+        $redis->srem("coasters:$coasterId:wagons", $wagonId);
         $redis->del($wagonKey);
         
         $this->logger->info("🗑️ Wagon {$wagonId} usunięty z kolejki {$coasterId}.");

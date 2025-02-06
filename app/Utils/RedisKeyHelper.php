@@ -14,8 +14,18 @@ class RedisKeyHelper
         return "coasters:{$coasterId}:wagons:{$wagonId}";
     }
 
-    public static function personnel(string $coasterId): string
+    public static function coasterWagons(string $coasterId): string
     {
-        return "coasters:{$coasterId}:personnel";
+        return "coasters:{$coasterId}:wagons";
+    }
+
+    public static function wagonBreak(string $coasterId): string
+    {
+        return "coasters:{$coasterId}:wagons:break";
+    }
+
+    public static function wagonInTransit(string $coasterId): string
+    {
+        return "coasters:{$coasterId}:wagons:in_transit";
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use CodeIgniter\CLI\CLI;
 use Predis\Client;
 
 class RedisService
@@ -10,11 +11,22 @@ class RedisService
 
     public function __construct()
     {
+        
+
         $this->client = new Client([
-            'host' => 'redis',
-            'port' => 6379,
-            'database' => 2,
+            'scheme' => 'tcp',
+            'host'   => getenv('REDIS_HOST') ?: 'redis',
+            'port'   => getenv('REDIS_PORT') ?: 6379,
+            'database' => match (getenv('CI_ENVIRONMENT')) {
+                'development' => 0,
+                'staging'     => 2,
+                'production'  => 3,
+                default => 0,
+            }
+
+            
         ]);
+
     }
 
     public function getClient(): Client

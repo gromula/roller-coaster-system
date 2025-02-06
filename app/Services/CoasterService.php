@@ -49,7 +49,6 @@ class CoasterService
                 'state' => 'idle',
                 'godziny_od' => $coaster->startTime,
                 'godziny_do' => $coaster->endTime,
-                'next_run' => time(),
                 'liczba_personelu' => $coaster->liczbaPersonelu,
                 'liczba_klientow' => $coaster->liczbaKlientow,
                 'dl_trasy' => $coaster->dlTrasy
